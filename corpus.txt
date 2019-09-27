@@ -1,0 +1,20 @@
+Here aux_program is at most one of java, php, python (your choice).
+
+Once you have coded your program, I want you to come up with 10 paragraphs from Wikipedia pages of your choice.
+
+These will be your corpus. Decide on two phrases your would like to search about involving at least three terms.
+Decide by hand which documents you feel are relevant not relevant to your queries.
+Consider formulating a search for each of these phrases using either a purely conjunctive query or a purely disjunctive query.
+
+For each search phrase determine how your program would ranks results for the purely conjunctive
+and purely disjunctive query variation and determine the top 5 documents returned for each of these cases.
+
+Then by hand compute the precision@5 and recall@5 scores.
+This homework consists of two parts a coding part and an experiment part.
+The query is a sequence of command line arguments in Polish notation.
+Each command line argument in the query is either _AND, _OR, or a term.
+Here a term is defined to be an alphanumeric string not containing underscore.
+
+For this homework, two terms are the same if they are the same after converting them to lower case.
+An example of running the program might be:
+To compute VSM scores use all the terms from the query. I.e., for the above these would be good, dog, bad, cat.
