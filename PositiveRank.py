@@ -103,32 +103,6 @@ def generate_query_vector(query_terms, inverted_index):
 
 	return query_vector
 
-# Returns a normalized version of vector
-def normalize(vector):
-	magnitude = 0;
-	for x in vector:
-		magnitude += x*x
-
-	magnitude = math.sqrt(magnitude)
-
-	# avoid dividing by zero, zero vector normalized is zero vector
-	if magnitude == 0:
-		return vector
-
-	result = []
-	for x in vector:
-		result += [x/magnitude]
-
-	return result
-
-# Returns the dot product of two vectors
-def dot_product(vector1, vector2):
-	result = 0
-	for x in range(len(vector1)):
-		result += vector1[x]*vector2[x]
-
-	return result
-
 # Compute proximity rank of documents containing terms in
 # query_terms, returning a max of num_docs.
 # Query is conjunctive.
