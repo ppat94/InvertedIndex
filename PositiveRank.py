@@ -172,12 +172,9 @@ def next_cover(query_terms, position, inverted_index):
 if __name__== "__main__":
 	# Handle input
 
-	# filename = sys.argv[1]
-	filename = "corpus.txt"
-	# num_results = int(sys.argv[2])
-	num_results = 5
-	# query = sys.argv[3]
-	query = "dog"
+	filename = sys.argv[1]
+	num_results = int(sys.argv[2])
+	query = sys.argv[3]
 
 	# Build inverted index
 	index = InvertedIndex()
