@@ -2,6 +2,8 @@ import sys
 import math
 import string
 from IndexPrinter import InvertedIndex
+from BooleanRetrieval import construct_tree, all_solution, convert_to_infix
+
 
 # Returns list of documents that contain all of the terms in
 # query_terms.
@@ -167,26 +169,46 @@ def next_cover(query_terms, position, inverted_index):
 	else:
 		return next_cover(query_terms, u, inverted_index)
 
+if __name__== "__main__":
+	# Handle input
 
+	# filename = sys.argv[1]
+	filename = "corpus.txt"
+	# num_results = int(sys.argv[2])
+	num_results = 5
+	# query = sys.argv[3]
+	query = "dog"
 
-# Handle input
-filename = sys.argv[1]
-num_results = int(sys.argv[2])
-query = sys.argv[3]
+	# Build inverted index
+	index = InvertedIndex()
+	index.build_index(filename)
 
-# Build inverted index
-index = InvertedIndex()
-index.build_index(filename)
+	# Strip punctuation and convert query to lower case
+	query = query.translate(str.maketrans("", "", string.punctuation))
+	query = query.lower()
 
-# Strip punctuation and convert query to lower case
-query = query.translate(str.maketrans("", "", string.punctuation))
-query = query.lower()
+	#boolean retrieval
+	root = construct_tree(convert_to_infix(query.split(' ')), query.split(' '))
+	doc_ids = all_solution(root, index.num_documents, index)
+	
+	# find all terms
+	command_term = []
+	for command in query.split(' '):
+		if command != 'or' and command != 'and':
+			command_term.append(command)
+		else:
+			continue
 
-# Proximity Ranked retrieval
-results = []
-results = rank_proximity(query.split(), num_results, index)
+	# Proximity Ranked retrieval
+	results = []
+	results = rank_proximity(command_term, num_results, index)
 
-# Print results
-print("DocId Score")
-for document, score in results:
-	print(str(document) + " " + str("%.4f" % score))
+	for docid in results:
+		if docid[0] not in doc_ids:
+			results.remove(docid)
+
+# doc_ids & results?
+	# Print results
+	print("DocId Score")
+	for document, score in results:
+		print(str(document) + " " + str("%.4f" % score))
