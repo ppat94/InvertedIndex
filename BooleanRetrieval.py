@@ -52,26 +52,26 @@ def convert_to_infix(query):
     query = query[-1::-1]
     # output = ' '.join(inputWords)
     for term in query:
-        if term == 'and':
+        if term == '_AND':
             query = myStack.pop()
-            query = query + ' and ' + myStack.pop()
+            query = query + ' _AND ' + myStack.pop()
             myStack.append(query)
-        elif term == 'or':
+        elif term == '_OR':
             query1 = myStack.pop()
             query2 = myStack.pop()
-            myStack.append(query1 + ' or ' + query2)
+            myStack.append(query1 + ' _OR ' + query2)
         else:
             myStack.append(term)
     return myStack
 
 
 def doc_right(root, position, index):
-    if root.data == 'or' or root.data == 'and':
+    if root.data == '_OR' or root.data == '_AND':
         doc_right_l = doc_right(root.left, position, index)
         doc_right_r = doc_right(root.right, position, index)
         is_infinity = infinity_check_right(doc_right_l, doc_right_r, root.data)
         if is_infinity is None:
-            if root.data == 'or':
+            if root.data == '_OR':
                 return min(doc_right_r, doc_right_l)
             else:
                 return max(doc_right_r, doc_right_l)
@@ -115,12 +115,12 @@ def infinity_check_left(l, r, command):
         return None
 
 def doc_left(root, position, index):
-    if root.data == 'or' or root.data == 'and':
+    if root.data == '_OR' or root.data == '_AND':
         doc_left_r = doc_left(root.left, position, index)
         doc_left_l = doc_left(root.right, position, index)
         is_infinity = infinity_check_left(doc_left_l, doc_left_r, root.data)
         if is_infinity is None:
-            if root.data == 'or':
+            if root.data == '_OR':
                 return max(doc_left_r, doc_left_l)
             else:
                 return min(doc_left_r, doc_left_l)

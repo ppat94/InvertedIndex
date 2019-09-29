@@ -180,25 +180,28 @@ if __name__== "__main__":
 	index = InvertedIndex()
 	index.build_index(filename)
 
-	# Strip punctuation and convert query to lower case
-	query = query.translate(str.maketrans("", "", string.punctuation))
-	query = query.lower()
-
-	#boolean retrieval
-	root = construct_tree(convert_to_infix(query.split(' ')), query.split(' '))
-	doc_ids = all_solution(root, index.num_documents, index)
-	
+	boolean_retrieval = False
 	# find all terms
-	command_term = []
-	for command in query.split(' '):
-		if command != 'or' and command != 'and':
-			command_term.append(command)
+	arguments = []
+	for argument in query.split(' '):
+		if argument != '_OR' and argument != '_AND':
+			arguments.append(argument)
 		else:
+			boolean_retrieval = True
 			continue
+	#boolean retrieval
+	if boolean_retrieval:
+		root = construct_tree(convert_to_infix(query.split(' ')), query.split(' '))
+		doc_ids = all_solution(root, index.num_documents, index)
+	
+	# Strip punctuation and convert query to lower case
+	# query = query.translate(str.maketrans("", "", string.punctuation))
+	# query = query.lower()
+	arguments = [x.lower() for x in arguments]
 
 	# Proximity Ranked retrieval
 	results = []
-	results = rank_proximity(command_term, num_results, index)
+	results = rank_proximity(set(arguments), num_results, index)
 
 	for docid in results:
 		if docid[0] not in doc_ids:
