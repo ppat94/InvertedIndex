@@ -58,9 +58,7 @@ def convert_to_infix(query):
             myStack.append(query)
         elif term == 'or':
             query1 = myStack.pop()
-            # nextSolution()
             query2 = myStack.pop()
-            # nextSolution()
             myStack.append(query1 + ' or ' + query2)
         else:
             myStack.append(term)
@@ -71,7 +69,7 @@ def doc_right(root, position, index):
     if root.data == 'or' or root.data == 'and':
         doc_right_l = doc_right(root.left, position, index)
         doc_right_r = doc_right(root.right, position, index)
-        is_infinity = boundery_check(doc_right_l, doc_right_r, root.data)
+        is_infinity = infinity_check_right(doc_right_l, doc_right_r, root.data)
         if is_infinity is None:
             if root.data == 'or':
                 return min(doc_right_r, doc_right_l)
@@ -87,27 +85,40 @@ def doc_right(root, position, index):
             return "infinity"
 
 
-def boundery_check(l, r, command):
+def infinity_check_right(l, r, command):
     if command == 'and':
         if l == 'infinity' or r == 'infinity':
             return 'infinity'
-    else:
+    elif command == 'or':
         if l == 'infinity' and r != 'infinity':
             return r
         if l != 'infinity' and r == 'infinity':
             return l
-
-    if l == 'infinity' and r == 'infinity':
-        return 'infinity'
+        if l == 'infinity' and r == 'infinity':
+            return 'infinity'
     else:
         return None
 
+def infinity_check_left(l, r, command):
+    if command == 'and':
+        if l == '-infinity' or r == '-infinity':
+            return '-infinity'
+    else:
+        if l == '-infinity' and r != '-infinity':
+            return r
+        if l != '-infinity' and r == '-infinity':
+            return l
+
+    if l == '-infinity' and r == '-infinity':
+        return '-infinity'
+    else:
+        return None
 
 def doc_left(root, position, index):
     if root.data == 'or' or root.data == 'and':
         doc_left_r = doc_left(root.left, position, index)
         doc_left_l = doc_left(root.right, position, index)
-        is_infinity = boundery_check(doc_left_l, doc_left_r, root.data)
+        is_infinity = infinity_check_left(doc_left_l, doc_left_r, root.data)
         if is_infinity is None:
             if root.data == 'or':
                 return max(doc_left_r, doc_left_l)
@@ -117,10 +128,10 @@ def doc_left(root, position, index):
             return is_infinity
     else:
         res = index.prev(root.data, (position, 0))
-        if res != 'infinity' and res != position:
+        if res != '-infinity' and res != position:
             return res[0]
         else:
-            return "infinity"
+            return "-infinity"
 
 
 def next_solution(query, position, index):
@@ -129,7 +140,7 @@ def next_solution(query, position, index):
         return ""
     else:
         docid_left = doc_left(query, docid_right + 1, index)
-        if docid_left == docid_left:
+        if docid_right == docid_left:
             return docid_left
         else:
             return next_solution(query, docid_right, index)
