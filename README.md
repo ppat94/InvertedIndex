@@ -3,5 +3,5 @@
 Contributors:
 
 Parth Patel : 013705718  
-Xinching Yuan : {}  
+Xinching Yuan : 008452899
 Qianhui Fan : {}  
