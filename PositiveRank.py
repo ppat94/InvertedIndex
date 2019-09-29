@@ -172,9 +172,12 @@ def next_cover(query_terms, position, inverted_index):
 if __name__== "__main__":
 	# Handle input
 
-	filename = sys.argv[1]
-	num_results = int(sys.argv[2])
-	query = sys.argv[3]
+	# filename = sys.argv[1]
+	filename = "corpus.txt"
+	# num_results = int(sys.argv[2])
+	num_results = 5
+	# query = sys.argv[3]
+	query = "_AND good _AND dog cat"
 
 	# Build inverted index
 	index = InvertedIndex()
@@ -190,10 +193,12 @@ if __name__== "__main__":
 			boolean_retrieval = True
 			continue
 	#boolean retrieval
+	doc_ids = []
 	if boolean_retrieval:
 		root = construct_tree(convert_to_infix(query.split(' ')), query.split(' '))
 		doc_ids = all_solution(root, index.num_documents, index)
-	
+		doc_ids = [i for i in doc_ids if i]
+
 	# Strip punctuation and convert query to lower case
 	# query = query.translate(str.maketrans("", "", string.punctuation))
 	# query = query.lower()
@@ -203,12 +208,13 @@ if __name__== "__main__":
 	results = []
 	results = rank_proximity(set(arguments), num_results, index)
 
-	for docid in results:
-		if docid[0] not in doc_ids:
-			results.remove(docid)
+	# for docid in results:
+	# 	if docid[0] not in doc_ids:
+	# 		results.remove(docid)
 
 # doc_ids & results?
 	# Print results
+	print("Boolean Retrieval results: " + str(doc_ids))
 	print("DocId Score")
 	for document, score in results:
 		print(str(document) + " " + str("%.4f" % score))

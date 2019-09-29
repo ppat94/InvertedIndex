@@ -10,6 +10,7 @@ class Node:
         self.left = None
         self.right = None
 
+
 def buildTree(inOrder, preOrder, inStrt, inEnd):
     if (inStrt > inEnd):
         return None
@@ -85,34 +86,39 @@ def doc_right(root, position, index):
             return "infinity"
 
 
-def infinity_check_right(l, r, command):
-    if command == 'and':
+def infinity_check_right(l, r, argument):
+    if argument == '_AND':
         if l == 'infinity' or r == 'infinity':
             return 'infinity'
-    elif command == 'or':
+        else:
+            return None
+    if argument == '_OR':
         if l == 'infinity' and r != 'infinity':
             return r
         if l != 'infinity' and r == 'infinity':
             return l
         if l == 'infinity' and r == 'infinity':
             return 'infinity'
-    else:
-        return None
+        else:
+            return None
 
-def infinity_check_left(l, r, command):
-    if command == 'and':
+
+def infinity_check_left(l, r, argument):
+    if argument == '_AND':
         if l == '-infinity' or r == '-infinity':
             return '-infinity'
-    else:
+        else:
+            return None
+    if argument == '_OR':
         if l == '-infinity' and r != '-infinity':
             return r
         if l != '-infinity' and r == '-infinity':
             return l
+        if l == '-infinity' and r == '-infinity':
+            return '-infinity'
+        else:
+            return None
 
-    if l == '-infinity' and r == '-infinity':
-        return '-infinity'
-    else:
-        return None
 
 def doc_left(root, position, index):
     if root.data == '_OR' or root.data == '_AND':
@@ -137,7 +143,7 @@ def doc_left(root, position, index):
 def next_solution(query, position, index):
     docid_right = doc_right(query, position, index)
     if docid_right == "infinity":
-        return ""
+        return None
     else:
         docid_left = doc_left(query, docid_right + 1, index)
         if docid_right == docid_left:
