@@ -1,6 +1,5 @@
 import sys
 import math
-import string
 from IndexPrinter import InvertedIndex
 from BooleanRetrieval import construct_tree, all_solution, convert_to_infix
 
@@ -172,12 +171,9 @@ def next_cover(query_terms, position, inverted_index):
 if __name__== "__main__":
 	# Handle input
 
-	# filename = sys.argv[1]
-	filename = "corpus.txt"
-	# num_results = int(sys.argv[2])
-	num_results = 5
-	# query = sys.argv[3]
-	query = "_AND good _AND dog cat"
+	filename = sys.argv[1]
+	num_results = int(sys.argv[2])
+	query = sys.argv[3]
 
 	# Build inverted index
 	index = InvertedIndex()
@@ -195,7 +191,13 @@ if __name__== "__main__":
 	#boolean retrieval
 	doc_ids = []
 	if boolean_retrieval:
-		root = construct_tree(convert_to_infix(query.split(' ')), query.split(' '))
+		boolean_retrieval_query = []
+		for x in query.split(' '):
+			if x != '_AND' and x != '_OR':
+				boolean_retrieval_query.append(x.lower())
+			else:
+				boolean_retrieval_query.append(x)
+		root = construct_tree(convert_to_infix(boolean_retrieval_query), boolean_retrieval_query)
 		doc_ids = all_solution(root, index.num_documents, index)
 		doc_ids = [i for i in doc_ids if i]
 
