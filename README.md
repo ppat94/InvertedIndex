@@ -3,4 +3,5 @@
 Contributors:
 
 Parth Patel : 013705718  
-Xinching Yuan : {}
+Xinching Yuan : {}  
+Qianhui Fan : {}  
