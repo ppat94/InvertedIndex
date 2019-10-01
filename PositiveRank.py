@@ -5,36 +5,63 @@ from BooleanRetrieval import construct_tree, all_solution, convert_to_infix
 
 
 def normalize(vector):
-	magnitude = 0;
-	for x in vector:
-		magnitude += x*x
+    magnitude = 0;
+    for x in vector:
+      magnitude += x*x
+    
+    magnitude = math.sqrt(magnitude)
 
-	magnitude = math.sqrt(magnitude)
+    if magnitude == 0:
+      return vector
 
-	if magnitude == 0:
-		return vector
+    result = []
+    for x in vector:
+      result += [x/magnitude]
 
-	result = []
-	for x in vector:
-		result += [x/magnitude]
-
-	return result
+    return result
 
 def dot_product(vector1, vector2):
-	result = 0
-	for x in range(len(vector1)):
-		result += vector1[x]*vector2[x]
+    result = 0
+    for x in range(len(vector1)):
+      result += vector1[x]*vector2[x]
 
-	return result
+    return result
 
 # Compute cosine rank of documents containing
 # terms in query_terms, returning max of num_docs.
 # Query is conjunctive.
-def rank_cosine(query_terms, num_docs, inverted_index, documents):
-	result = []
+def rank_cosine (query_terms, num_docs, inverted_index):
+    result = []
 
-	# List of documents containing all terms in query
-	# documents = documents_containing_query(query_terms, inverted_index)
+    # List of documents containing all terms in query
+    documents = documents_containing_query(query_terms, inverted_index)
+
+    if len(documents) == 0:
+      return result
+
+    # Compute query vector
+    query_vector = generate_query_vector(query_terms, inverted_index)
+
+    for document in documents:
+      # Compute document vector
+        document_vector = generate_document_vector(document, inverted_index)
+
+        # Compute score
+        score = dot_product(normalize(document_vector), normalize(query_vector))
+
+        result += [(document, score)]
+
+	# sort by score, descending order
+    result.sort(key = lambda x: -x[1])
+    return result[0:num_docs]
+
+# Compute cosine rank of documents in case of Boolean Retrieval containing
+# terms in query_terms, returning max of num_docs.
+# Query is conjunctive.
+
+def rank_cosine_bool (query_terms, num_docs, documents, inverted_index):
+    
+	result = []
 
 	if len(documents) == 0:
 		return result
@@ -54,7 +81,7 @@ def rank_cosine(query_terms, num_docs, inverted_index, documents):
 	# sort by score, descending order
 	result.sort(key = lambda x: -x[1])
 	return result[0:num_docs]
-
+	
 # Returns list of documents that contain all of the terms in
 # query_terms.
 def documents_containing_query(query_terms, inverted_index):
@@ -220,46 +247,50 @@ def next_cover(query_terms, position, inverted_index):
 		return next_cover(query_terms, u, inverted_index)
 
 if __name__== "__main__":
-	# Handle input
+    # Handle input
 
-	filename = sys.argv[1]
-	num_results = int(sys.argv[2])
-	query = sys.argv[3]
+    filename = sys.argv[1]
+    num_results = int(sys.argv[2])
+    query = sys.argv[3]
 
-	# Build inverted index
-	index = InvertedIndex()
-	index.build_index(filename)
+    # Build inverted index
+    index = InvertedIndex()
+    index.build_index(filename)
 
-	boolean_retrieval = False
-	# find all terms
-	arguments = []
-	for argument in query.split(' '):
-		if argument != '_OR' and argument != '_AND':
-			arguments.append(argument)
-		else:
-			boolean_retrieval = True
-			continue
-	#boolean retrieval
-	doc_ids = []
-	if boolean_retrieval:
-		boolean_retrieval_query = []
-		for x in query.split(' '):
-			if x != '_AND' and x != '_OR':
-				boolean_retrieval_query.append(x.lower())
-			else:
-				boolean_retrieval_query.append(x)
-		root = construct_tree(boolean_retrieval_query)
-		doc_ids = all_solution(root, index.num_documents, index)
-		doc_ids = [i for i in doc_ids if i]
+    boolean_retrieval = False
+    # find all terms
+    arguments = []
+    for argument in query.split(' '):
+        if argument != '_OR' and argument != '_AND':
+           arguments.append(argument)
+        else:
+           boolean_retrieval = True
+           continue
+    #boolean retrieval
+    doc_ids = []
+    if boolean_retrieval:
+        boolean_retrieval_query = []
+        for x in query.split(' '):
+            if x != '_AND' and x != '_OR':
+                boolean_retrieval_query.append(x.lower())
+            else:
+                boolean_retrieval_query.append(x)
+        root = construct_tree(convert_to_infix (boolean_retrieval_query), boolean_retrieval_query)
+        doc_ids = all_solution(root, index.num_documents, index)
+        doc_ids = [i for i in doc_ids if i]
 
 	# Strip punctuation and convert query to lower case
 	# query = query.translate(str.maketrans("", "", string.punctuation))
 	# query = query.lower()
-	arguments = [x.lower() for x in arguments]
+    arguments = [x.lower() for x in arguments]
 
 	# Proximity Ranked retrieval
-	results = []
-	results = rank_cosine(set(arguments), num_results, index, doc_ids)
+    results = []
+    
+    if not boolean_retrieval: 
+       results = rank_cosine(set(arguments), num_results, index)
+    else:
+       results = rank_cosine_bool (set(arguments), num_results, doc_ids, index)
 	# results = rank_proximity(set(arguments), num_results, index)
 
 	# for docid in results:
@@ -268,7 +299,7 @@ if __name__== "__main__":
 
 # doc_ids & results?
 	# Print results
-	print("Boolean Retrieval results: " + str(doc_ids))
-	print("DocId Score")
-	for document, score in results:
-		print(str(document) + " " + str("%.4f" % score))
+    print("Boolean Retrieval results: " + str(doc_ids))
+    print("DocId Score")
+    for document, score in results:
+      print(str(document) + " " + str("%.4f" % score))
