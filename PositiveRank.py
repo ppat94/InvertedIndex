@@ -30,11 +30,11 @@ def dot_product(vector1, vector2):
 # Compute cosine rank of documents containing
 # terms in query_terms, returning max of num_docs.
 # Query is conjunctive.
-def rank_cosine(query_terms, num_docs, inverted_index):
+def rank_cosine(query_terms, num_docs, inverted_index, documents):
 	result = []
 
 	# List of documents containing all terms in query
-	documents = documents_containing_query(query_terms, inverted_index)
+	# documents = documents_containing_query(query_terms, inverted_index)
 
 	if len(documents) == 0:
 		return result
@@ -222,12 +222,9 @@ def next_cover(query_terms, position, inverted_index):
 if __name__== "__main__":
 	# Handle input
 
-	# filename = sys.argv[1]
-	filename = "wiki.txt"
-	# num_results = int(sys.argv[2])
-	num_results = 5
-	# query = sys.argv[3]
-	query = "_OR _AND python latest version"
+	filename = sys.argv[1]
+	num_results = int(sys.argv[2])
+	query = sys.argv[3]
 
 	# Build inverted index
 	index = InvertedIndex()
@@ -262,7 +259,7 @@ if __name__== "__main__":
 
 	# Proximity Ranked retrieval
 	results = []
-	results = rank_cosine(set(arguments), num_results, index)
+	results = rank_cosine(set(arguments), num_results, index, doc_ids)
 	# results = rank_proximity(set(arguments), num_results, index)
 
 	# for docid in results:
