@@ -1,66 +1,22 @@
-import math
-
-import IndexPrinter
-
 
 class Node:
-    # Constructor to create a new node
     def __init__(self, data):
         self.data = data
         self.left = None
         self.right = None
 
-
-def buildTree(inOrder, preOrder, inStrt, inEnd):
-    if (inStrt > inEnd):
-        return None
-
-    # Pich current node from Preorder traversal using
-    # preIndex and increment preIndex
-    tNode = Node(preOrder[buildTree.preIndex])
-    buildTree.preIndex += 1
-
-    # If this node has no children then return
-    if inStrt == inEnd:
-        return tNode
-
-        # Else find the index of this node in Inorder traversal
-    inIndex = search(inOrder, inStrt, inEnd, tNode.data)
-
-    # Using index in Inorder Traversal, construct left
-    # and right subtrees
-    tNode.left = buildTree(inOrder, preOrder, inStrt, inIndex - 1)
-    tNode.right = buildTree(inOrder, preOrder, inIndex + 1, inEnd)
-
-    return tNode
-
-
-# UTILITY FUNCTIONS
-# Function to find index of vaue in arr[start...end]
-# The function assumes that value is rpesent in inOrder[]
-
-def search(arr, start, end, value):
-    for i in range(start, end + 1):
-        if arr[i] == value:
-            return i
-
-
-# Static variable preIndex
-
 def convert_to_infix(query):
     myStack = []
-    # inputWords = query.split(" ")
     query = query[-1::-1]
-    # output = ' '.join(inputWords)
     for term in query:
-        if term == '_AND':
-            query = myStack.pop()
-            query = query + ' _AND ' + myStack.pop()
-            myStack.append(query)
-        elif term == '_OR':
-            query1 = myStack.pop()
-            query2 = myStack.pop()
-            myStack.append(query1 + ' _OR ' + query2)
+        if term.data == '_AND':
+            term.left = myStack.pop()
+            term.right = myStack.pop()
+            myStack.append(term)
+        elif term.data == '_OR':
+            term.left = myStack.pop()
+            term.right = myStack.pop()
+            myStack.append(term)
         else:
             myStack.append(term)
     return myStack
@@ -158,11 +114,9 @@ def all_solution(query, m, index):
         doc_id.append(next_solution(query, u, index))
     return set(doc_id)
 
-
-# The main function to construct BST from given preorder
-# traversal. This function mailny uses constructTreeUtil()
-def construct_tree(inOrder, preOrder):
-    buildTree.preIndex = 0
-    inOrder = str(inOrder).split(' ')
-    root = buildTree(inOrder, preOrder, 0, len(inOrder) - 1)
+def construct_tree(preOrder):
+    preOrder_node_list = []
+    for data in preOrder:
+        preOrder_node_list.append(Node(data))
+    root = convert_to_infix(preOrder_node_list)[0]
     return root

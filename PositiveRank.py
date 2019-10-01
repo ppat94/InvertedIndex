@@ -222,9 +222,12 @@ def next_cover(query_terms, position, inverted_index):
 if __name__== "__main__":
 	# Handle input
 
-	filename = sys.argv[1]
-	num_results = int(sys.argv[2])
-	query = sys.argv[3]
+	# filename = sys.argv[1]
+	filename = "wiki.txt"
+	# num_results = int(sys.argv[2])
+	num_results = 5
+	# query = sys.argv[3]
+	query = "_OR _AND python latest version"
 
 	# Build inverted index
 	index = InvertedIndex()
@@ -248,7 +251,7 @@ if __name__== "__main__":
 				boolean_retrieval_query.append(x.lower())
 			else:
 				boolean_retrieval_query.append(x)
-		root = construct_tree(convert_to_infix(boolean_retrieval_query), boolean_retrieval_query)
+		root = construct_tree(boolean_retrieval_query)
 		doc_ids = all_solution(root, index.num_documents, index)
 		doc_ids = [i for i in doc_ids if i]
 
