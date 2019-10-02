@@ -30,11 +30,11 @@ def dot_product(vector1, vector2):
 # Compute cosine rank of documents containing
 # terms in query_terms, returning max of num_docs.
 # Query is conjunctive.
-def rank_cosine (query_terms, num_docs, inverted_index):
+def rank_cosine (query_terms, num_docs, documents, inverted_index):
     result = []
 
     # List of documents containing all terms in query
-    documents = documents_containing_query(query_terms, inverted_index)
+    #documents = documents_containing_query(query_terms, inverted_index)
 
     if len(documents) == 0:
       return result
@@ -55,33 +55,7 @@ def rank_cosine (query_terms, num_docs, inverted_index):
     result.sort(key = lambda x: -x[1])
     return result[0:num_docs]
 
-# Compute cosine rank of documents in case of Boolean Retrieval containing
-# terms in query_terms, returning max of num_docs.
-# Query is conjunctive.
 
-def rank_cosine_bool (query_terms, num_docs, documents, inverted_index):
-    
-	result = []
-
-	if len(documents) == 0:
-		return result
-
-	# Compute query vector
-	query_vector = generate_query_vector(query_terms, inverted_index)
-
-	for document in documents:
-		# Compute document vector
-		document_vector = generate_document_vector(document, inverted_index)
-
-		# Compute score
-		score = dot_product(normalize(document_vector), normalize(query_vector))
-
-		result += [(document, score)]
-
-	# sort by score, descending order
-	result.sort(key = lambda x: -x[1])
-	return result[0:num_docs]
-	
 # Returns list of documents that contain all of the terms in
 # query_terms.
 def documents_containing_query(query_terms, inverted_index):
@@ -286,12 +260,7 @@ if __name__== "__main__":
 
 	# Proximity Ranked retrieval
     results = []
-    
-    if not boolean_retrieval: 
-       results = rank_cosine(set(arguments), num_results, index)
-    else:
-       results = rank_cosine_bool (set(arguments), num_results, doc_ids, index)
-	# results = rank_proximity(set(arguments), num_results, index)
+    results = rank_cosine(set(arguments), num_results, doc_ids, index)
 
 	# for docid in results:
 	# 	if docid[0] not in doc_ids:
