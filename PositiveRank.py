@@ -275,7 +275,7 @@ if __name__== "__main__":
                 boolean_retrieval_query.append(x.lower())
             else:
                 boolean_retrieval_query.append(x)
-        root = construct_tree(convert_to_infix (boolean_retrieval_query), boolean_retrieval_query)
+        root = construct_tree(boolean_retrieval_query)
         doc_ids = all_solution(root, index.num_documents, index)
         doc_ids = [i for i in doc_ids if i]
 
